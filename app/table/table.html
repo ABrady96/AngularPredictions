@@ -1,10 +1,11 @@
-<div ng-app="myApp" ng-controller="PlayerController" class="col-md-8" ng-init="getPlayers()">
+<div ng-app="myApp" ng-controller="PlayerController" class="col-md-8" ng-init="getPlayers();loadTeam()">
+<link href="app.css" rel="stylesheet">
 <div class="col-xs-6">
 <h2>Players</h2>
 <div class="table-responsive">
     <table ng-table="tableParams" class="table table-bordered table-hover" show-filter="true">
         <tr ng-repeat="key in $data" ng-click="AddPlayer(key)">
-            <td ng-click="$event.stopPropagation()"><a ng-click="openInfo('lg', $event, key)"><i class="fas fa-info" style="font-size:20px"></i></a></td>
+            <td ng-click="$event.stopPropagation()"><a ng-click="openInfo('lg', $event, key)"><i class="fas fa-info" style="font-size:20px; color: #5CB85C"></i></a></td>
             <td data-title="'Name'">{{key.first_name}} {{key.web_name}}</td>
             <td data-title="'Position'" filter="{'pos': 'select'}" filter-data="positions">{{key.pos}}</td>
             <td data-title="'Team'" filter="{team_name: 'select'}" filter-data="team_names">{{key.team_name}}</td>
@@ -14,9 +15,12 @@
 </div>
 
 <div class="col-xs-6">
-<h2>Poj</h2>
+<h2>My Team</h2>
+</select>
 <div class="table-responsive">
-    <button ng-click="getPredictions()">Get Predictions</button>
+    <button class="btn btn-success" type="button" style="float: left" ng-click="loadTeam()">Load Team</button>
+    <button class="btn btn-success" type="button" style="float: right;" ng-click="getPredictions()">Get Predictions</button>
+    
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
@@ -26,13 +30,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="key in selectedPlayers" ng-click="RemovePlayer(key)">
-            <td>{{key.first_name}} {{key.second_name}}</td>
+        <tr ng-repeat="key in selectedPlayers" ng-click="RemovePlayer($index)">
+            <td>{{key.first_name}} {{key.web_name}}</td>
             <td>{{key.pos}}</td>
             <td>{{key.team_name}}</td>
         </tr>
         </tbody>
     </table>
+    <button class="btn btn-success" type="button" style="float: left" ng-click="saveTeam()">Save Team</button>
+    <button class="btn btn-success" type="button" style="float: right;" ng-click="clearTeam()">Clear Team</button>
+    </select>
     </div>
     </div>
 </div>
@@ -42,23 +49,22 @@
 
 <!--</div>-->
 
-<div style="float: right;" ng-app="myApp" ng-controller="PlayerController" class="col-md-3">
+<div style="margin-left: 50px;" ng-app="myApp" ng-controller="PlayerController" class="col-md-3">
     <h2>Player Projections</h2>
-    <table class="table table-hover">
+    <table class="table table-bordered table-hover">
         <tr>
+	    <th> </th>
             <th>Player</th>
             <th>Projected Points</th>
-            <!--<th>Goals For</th>-->
-            <!--<th>Goals Against</th>-->
-            <!--<th>Goal Difference</th>-->
         </tr>
-        <tr ng-repeat="pred in predictions">
-            <td ng-hide="pred.length">
-                {{pred.name}}
+        <tr ng-repeat="key in predictions">
+            <td ng-click="$event.stopPropagation();"><a ng-click="getPastPredictions(); openPredInfo('lg', $event, key)"><i class="fas fa-info" style="font-size:20px; color: #5CB85C""></i></a></td>
+            <td ng-hide="key.length">
+                {{key.name}}
             </td>
-            <td ng-hide="pred.length">{{pred.predicted}}</td>
+            <td ng-hide="key.length">{{key.predicted}}</td>
         </tr>
     </table>
+    <h4 style="float: left">Team Total: {{total}}</h4>
 </div>
-
 <p>{{errorMsg}}</p>

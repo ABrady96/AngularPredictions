@@ -1,0 +1,29 @@
+<div class="modal-header">
+    <h3 class="modal-title">Previous Predictions</h3>
+</div>
+<div class="modal-body">
+    <h4><strong>{{play.first_name}} {{play.web_name}}</strong></h4>
+    <p style="float: left">Team Name: {{play.team_name}}</p>
+    <table class="table">
+		      <thead>
+                      <tr>
+                          <th>Gameweek</th>
+                          <th>Predicted</th>
+			  <th>Total Points</th>
+                          <th>Prediction Error</th>
+                        </tr>
+			</thead>
+			<tbody>
+                        <tr ng-repeat="key in past_predictions">
+                            <td>{{key.round}}</td>
+                            <td>{{key.predicted}}</td>
+			    <td>{{key.total_points}}</td>
+                            <td>{{key.prediction_error}}</td>
+                        </tr>
+			</tbody>
+                    </table>
+</div>
+<div class="modal-footer">
+    <!--<button class="btn btn-primary" type="button" ng-click="ok()">OK</button>-->
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

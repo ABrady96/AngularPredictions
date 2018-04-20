@@ -1,26 +1,40 @@
-'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
+var myApp = angular.module('myApp', [
   'ngRoute',
   'myApp.leagues',
   'myApp.table',
   'myApp.signin',
   'myApp.signup',
   'myApp.version'
-]).
-config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
+]);
+
+myApp.config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
   $locationProvider.hashPrefix('!');
 
   $routeProvider.when('/', {
-    templateUrl: 'table/table.html'
+    templateUrl: 'table/table.html',
+      access: {restricted: true}
   }).when('/register', {
     templateUrl: 'signup/signup.html',
-      controller: 'postCtrl'
+      controller: 'postCtrl',
+      access: {restricted: true}
   }).when('/signin', {
     templateUrl: 'signin/signin.html',
-      controller: 'SigninController'
+      controller: 'SigninController',
+      access: {restricted: true}
   }).when('/logout', {
-          controller: 'logoutController'
+          controller: 'logoutController',
+      access: {restricted: true}
   }).otherwise({redirectTo: '/leagues'});
-}]);
+}])
+
+// myApp.run(function ($rootScope, $location, $route, AuthService) {
+//     $rootScope.$on('$routeChangeStart', function(event, next, current) {
+//         AuthService.getUserStatus()
+//             .then(function () {
+//                 if (!AuthService.isLoggedIn()) {
+//                 }
+//             });
+//     });
+// });

@@ -3,10 +3,30 @@
 .menu {
   padding: 50px;
   margin: 20px;
-  background-color: #FFF2E0;
+  background-color: #411583;
 }
 
 .navBardemoBasicUsage md-content .ext-content {
   padding: 50px;
   margin: 20px;
-  background-color: #FFF2E0; }
+  background-color: #411583; }
+
+.navbar-default {
+    background-color: #411583;
+    border-color: #E7E7E7;
+    color: #FEFEFE;
+}
+
+.navbar-text {
+	color: #FEFEFE;
+}
+
+.navbar-header {
+    text-align: center;
+}
+
+.media {
+  position: fixed; 
+  bottom: 0px; 
+  right: 0px;
+}

@@ -24,32 +24,35 @@
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
+          <span class="navbar-text">Toggle navigation</span>
+          <span class="navbar-text"></span>
+          <span class="navbar-text"></span>
+          <span class="navbar-text"></span>
         </button>
-        <a class="navbar-brand" href="#">Home</a>
+        <a style="color: #5CB85C; font-weight: bold;" class="navbar-brand" href="#!/table">Predictions</a>
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li><a href="#!/table?leagueId=426">Predictions</a></li>
-          <li><a href="#!/table?leagueId=430">Fixtures/Tables</a></li>
-          <li><a href="#!/table?leagueId=438">Stats</a></li>
+        <ul class="nav navbar-nav" style="margin-left: 660px;">
+          <li><a style="color: #5CB85C; font-size: 1.8em !important; font-weight: bold;" class="navbar-brand">FantasyPL Predictive Analytics</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-        <li><a href="#!/signup">Sign Up</a></li>
+        <li><a style="color: #5CB85C" href="#!/signup">Sign Up</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="#!/signin">Sign In</a></li>
+          <li><a style="color: #5CB85C" href="#!/signin">Sign In</a></li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
 
   <div ng-view></div>
+  <div class="media">
+  <a class="pull-left" href="https://fantasy.premierleague.com/">
+      <img class="media-object" src="http://www.fantasyfootballgeek.co.uk/wp-content/uploads/2015/05/fantasy-premier-league.jpg" />
+  </a>
+</div>
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>

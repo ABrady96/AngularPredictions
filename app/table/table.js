@@ -6,7 +6,8 @@ angular.module('myApp.table', ['ngRoute', 'ui.bootstrap', 'ngTable'])
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/table', {
             templateUrl: 'table/table.html',
-            controller: 'TableController'
+            controller: 'TableController',
+            access: {restricted: true}
         });
     }])
 
@@ -52,8 +53,9 @@ angular.module('myApp.table', ['ngRoute', 'ui.bootstrap', 'ngTable'])
             });
         }])
 
-    .controller('PlayerController', [ '$scope', '$http', '$routeParams', '$rootScope', '$uibModal', 'NgTableParams',
-        function ($scope, $http, $routeParams, $rootScope, $uibModal, NgTableParams) {
+    .controller('PlayerController', [ '$scope', '$http', '$routeParams', '$rootScope', '$uibModal',
+        'NgTableParams', 'AuthService', '$httpParamSerializer',
+        function ($scope, $http, $routeParams, $rootScope, $uibModal, NgTableParams, AuthService, $httpParamSerializer) {
             // $scope.filteredPlayers = []
             //     ,$scope.currentPage = 1
             //     ,$scope.numPerPage = 10
@@ -65,15 +67,34 @@ angular.module('myApp.table', ['ngRoute', 'ui.bootstrap', 'ngTable'])
             //     pageLimits: ['10', '50', '100']
             // };
             var self = this;
-            $scope.positions = [{id: "", title: ""}, {id: 'Goalkeeper', title: 'Goalkeeper'}, {id: 'Defender', title: 'Defender'},
+            $scope.init = function () {
+                
+            };
+            $scope.names = ["Emil", "Tobias", "Linus"];
+            $scope.positions = [{id: "", title: ""}, {id: 'Goalkeeper', title: 'Goalkeeper'}, {
+                id: 'Defender',
+                title: 'Defender'
+            },
                 {id: 'Midfielder', title: 'Midfielder'}, {id: 'Forward', title: 'Forward'}];
-            $scope.team_names = [{id: "", title: ""}, {id: 'Arsenal', title: 'Arsenal'}, {id: 'Bournmouth', title: 'Bournmouth'},
-                {id: 'Brighton', title: 'Brighton'}, {id: 'Burnley', title: 'Burnley'}, {id: 'Chelsea', title: 'Chelsea'},
-                {id: 'Crystal Palace', title: 'Crystal Palace'}, {id: 'Everton', title: 'Everton'}, {id: 'Huddersfield', title: 'Huddersfield'}
-                , {id: 'Leicester', title: 'Leicester'}, {id: 'Liverpool', title: 'Liverpool'}, {id: 'Man City', title: 'Man City'}
-                , {id: 'Man United', title: 'Man United'}, {id: 'Newcastle', title: 'Newcastle'}
+            $scope.team_names = [{id: "", title: ""}, {id: 'Arsenal', title: 'Arsenal'}, {
+                id: 'Bournmouth',
+                title: 'Bournmouth'
+            },
+                {id: 'Brighton', title: 'Brighton'}, {id: 'Burnley', title: 'Burnley'}, {
+                    id: 'Chelsea',
+                    title: 'Chelsea'
+                },
+                {id: 'Crystal Palace', title: 'Crystal Palace'}, {id: 'Everton', title: 'Everton'}, {
+                    id: 'Huddersfield',
+                    title: 'Huddersfield'
+                }
+                , {id: 'Leicester', title: 'Leicester'}, {id: 'Liverpool', title: 'Liverpool'}, {
+                    id: 'Manchester City',
+                    title: 'Man City'
+                }
+                , {id: 'Manchester United', title: 'Man United'}, {id: 'Newcastle', title: 'Newcastle'}
                 , {id: 'Southampton', title: 'Southampton'}, {id: 'Stoke', title: 'Stoke'}
-                , {id: 'Swansea', title: 'Swansea'}, {id: 'Spurs', title: 'Spurs'}
+                , {id: 'Swansea', title: 'Swansea'}, {id: 'Tottenham Hotspur', title: 'Spurs'}
                 , {id: 'Watford', title: 'Watford'}, {id: 'West Brom', title: 'West Brom'}
                 , {id: 'West Ham', title: 'West Ham'}];
             $scope.players = [];
@@ -106,31 +127,47 @@ angular.module('myApp.table', ['ngRoute', 'ui.bootstrap', 'ngTable'])
             // this.tableParams = new NgTableParams({
             //     dataset: $scope.players
             // });
-
-
-
-            $scope.AddPlayer = function(key) {
+            $scope.clearTeam = function () {
+                $scope.selectedPlayers = [];
+            };
+            $scope.AddPlayer = function (key) {
                 $scope.selectedPlayers.push(key);
                 console.log(key);
                 $rootScope.all_players = $scope.selectedPlayers
             };
-            $scope.RemovePlayer = function(key) {
-                $scope.selectedPlayers.splice(key, 1);
-                console.log(key);
+            $scope.RemovePlayer = function ($index) {
+                $scope.selectedPlayers.splice($index, 1);
                 $rootScope.all_players = $scope.selectedPlayers
             };
-            $scope.getPredictions = function() {
+            $scope.getPredictions = function () {
                 $rootScope.predictions = [];
-                angular.forEach($scope.selectedPlayers, function(value, key) {
-                        $http({
-                            method: 'GET',
-                            url: 'http://178.62.31.229/all_preds/' + value.player_id,
-                            headers: {'Content-Type': 'application/json'}
-                        }).then(function successCallback(response) {
-                            // Store response data
-                            $rootScope.predictions.push(response.data);
-                            console.log(response)
-                        });
+				$rootScope.total = 0;
+                angular.forEach($scope.selectedPlayers, function (value, key) {
+                    $http({
+                        method: 'GET',
+                        url: 'http://178.62.31.229/preds/' + value.player_id,
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(function successCallback(response) {
+                        // Store response data
+                        $rootScope.predictions.push(response.data);
+						$rootScope.total = $rootScope.total + response.data.predicted;
+						$rootScope.total.toFixed(2);
+                        console.log(response)
+                    });
+                });
+            };
+	    $scope.getPastPredictions = function () {
+                $scope.past_predictions = [];
+                angular.forEach($scope.selectedPlayers, function (value, key) {
+                    $http({
+                        method: 'GET',
+                        url: 'http://178.62.31.229/past_preds/' + value.player_id,
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(function successCallback(response) {
+                        // Store response data
+                        $scope.past_predictions.push(response.data);
+                        console.log(response)
+                    });
                 });
             };
             $scope.openInfo = function (size, e, player) {
@@ -150,13 +187,128 @@ angular.module('myApp.table', ['ngRoute', 'ui.bootstrap', 'ngTable'])
                 });
                 e.stopPropagation();
             };
-
-    }])
-
-    .controller('ModalInstanceController', [ '$scope', '$uibModalInstance','Player',
-        function ($scope, $uibModalInstance, Player) {
-            $scope.cancel = function () {
-                $uibModalInstance.dismiss('cancel');
+            $scope.openPredInfo = function (size, e, prediction) {
+                var modalInstance = $uibModal.open({
+                    animation: $scope.animationsEnabled,
+                    templateUrl: 'modal/playerPredModal.html',
+                    controller: 'PredModalInstanceController',
+                    size: size,
+                    resolve: {
+                        Prediction: function () {
+                            return prediction;
+                        }
+                    }
+                });
+                modalInstance.then(function () {
+                    console.log('gowan son');
+                });
+                e.stopPropagation();
             };
-            $scope.playerInfo = Player;
-        } ]);
+            var user = null;
+            $scope.getUserStatus = function () {
+                return $http.get('http://178.62.31.229/status/')
+                // handle success
+                    .success(function (data) {
+                        if(data.status === true){
+                            console.log(data);
+                            $scope.user = true;
+                            user = true;
+                        } else {
+                            console.log(data);
+                            user = false;
+                        }
+                    })
+                    // handle error
+                    .error(function (data) {
+                        user = false;
+                    });
+            }
+            $scope.saveTeam = function () {
+                $scope.current_user = $rootScope.user_id;
+                angular.forEach($scope.selectedPlayers, function (value, key) {
+                    $http({
+                        method: 'POST',
+                        url: 'http://178.62.31.229/saveTeam/',
+                        data: $httpParamSerializer({tid:1, pid:value.player_id, uid:$scope.current_user}),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function createSuccess(response) {
+                        console.log(value);
+                        console.log(response.data);
+                    }, function errorCallback(response) {
+                        console.log($httpParamSerializer({tid:1, pid:value.player_id, uid:$scope.current_user}))
+                        console.log(value);
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                    });
+                });
+            }
+            $scope.loadTeam = function () {
+                $scope.current_user = $rootScope.user_id;
+                $http({
+                        method: 'POST',
+                        url: 'http://178.62.31.229/loadTeam/',
+                        data: $httpParamSerializer({tid:1, uid:$scope.current_user}),
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                    }).then(function createSuccess(response) {
+                        console.log(response.data);
+                        
+                        angular.forEach(response.data, function (value, key) {
+                             $http({
+                                    method: 'GET',
+                                    url: 'http://178.62.31.229/get_single_player/' + value.pid,
+                                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                            }).then(function createSuccess(response) {
+                                $scope.selectedPlayers.push(response.data)
+                            }, function errorCallback(response) {
+                                console.log($httpParamSerializer({tid:1, pid:value.player_id, uid:$scope.current_user}))
+                                console.log(value);
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                    }); 
+                        })
+
+                    }, function errorCallback(response) {
+                        console.log($httpParamSerializer({tid:1, uid:$scope.current_user}))
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                    });
+            }
+
+
+        }])
+        .controller('ModalInstanceController', ['$scope', '$uibModalInstance', 'Player',
+                    function ($scope, $uibModalInstance, Player) {
+                        $scope.cancel = function () {
+                            $uibModalInstance.dismiss('cancel');
+                        };
+                        $scope.playerInfo = Player;
+        }])
+
+        .controller('PredModalInstanceController', ['$scope', '$uibModalInstance', '$http', '$rootScope', 'Prediction',
+                    function ($scope, $uibModalInstance, $http, $rootScope, Prediction) {
+                        $scope.cancel = function () {
+                            $uibModalInstance.dismiss('cancel');
+                        };
+                        $scope.playerInfo = Prediction;
+			$scope.play = "";
+			$scope.past_predictions = [];
+			$http({
+                        method: 'GET',
+                        url: 'http://178.62.31.229/past_preds/' + $scope.playerInfo.player_id,
+                        headers: {'Content-Type': 'application/json'}
+                    }).then(function successCallback(response) {
+                        // Store response data
+                        $scope.past_predictions = response.data;
+                    })
+			$http({
+                                    method: 'GET',
+                                    url: 'http://178.62.31.229/get_single_player/' + $scope.playerInfo.player_id,
+                                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                            }).then(function createSuccess(response) {
+                                $scope.play = response.data
+				console.log($scope.play);
+                            }, function errorCallback(response) {
+                        // called asynchronously if an error occurs
+                        // or server returns response with an error status.
+                    }); 
+        }]);

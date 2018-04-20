@@ -5,11 +5,13 @@ angular.module('myApp.signin', ['ngRoute'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('signin', {
             templateUrl: 'signin/signin.html',
-            controller: 'SigninController'
+            controller: 'SigninController',
+            access: {restricted: true}
         });
     }])
 
-    .controller('SigninController', ['$scope', '$http', '$location', 'AuthService', '$httpParamSerializer', '$rootScope',
+    .controller('SigninController', ['$scope', '$http', '$location', 'AuthService',
+        '$httpParamSerializer', '$rootScope',
         function ($scope, $http, $location, AuthService, $httpParamSerializer, $rootScope) {
             $scope.user = {};
             $rootScope.userLoggedIn = false;
@@ -17,17 +19,19 @@ angular.module('myApp.signin', ['ngRoute'])
                 $scope.error = false;
                 $http({
                     method: 'POST',
-                    url: 'http://127.0.0.1:5000/AuthenticateUser/',
+                    url: 'http://178.62.31.229/AuthenticateUser/',
                     data: $httpParamSerializer($scope.user),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).then(function createSuccess(response) {
-                    if (response.data.status === 200) {
-                        $rootScope.userLoggedIn = true;
+                    if (response.status === 200) {
+                        $rootScope.userLogged = true;
+                        // console.log(response);
                         $location.path('/');
                         $scope.signInForm = {};
                     }
                     else {
                         $scope.error = true;
+                        console.log(response);
                         $scope.errorMessage = "Invalid username and/or password";
                         $scope.signInForm = {};
                     }
@@ -57,6 +61,45 @@ angular.module('myApp.signin', ['ngRoute'])
                 // }).then(function createSuccess(response) {
                 //     console.log(response.data)
                 // });
+            };
+
+            $scope.getUser = function () {
+                $scope.error = false;
+                $http({
+                    method: 'POST',
+                    url: 'http://178.62.31.229/getUser/',
+                    data: $httpParamSerializer($scope.user),
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                }).then(function createSuccess(response) {
+                    if (response.data.username === $scope.user.username && response.data.password === $scope.user.password) {
+                        $rootScope.userLogged = true;
+                        $rootScope.user_id = response.data.id;
+                        $scope.signInForm = {};
+                    }
+                    else {
+                        $scope.error = true;
+                        $rootScope.user_id = response.data.id;
+                        $scope.errorMessage = "Invalid username and/or password";
+                        $scope.signInForm = {};
+                    }
+                });
+            };
+
+            function isLoggedIn() {
+                if($rootScope.userLogged === true) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
+            // $scope.$on('$locationChangeStart', function(event, next, current) {
+            //     AuthService.getUserStatus()
+            //         .then(function () {
+            //             if (next.access.restricted && !AuthService.isLoggedIn()) {
+            //                 $location.path('/signin');
+            //                 $route.reload();
+            //             }
+            //         });
+            // });
         }
         ]);

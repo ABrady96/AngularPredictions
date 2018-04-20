@@ -23,7 +23,7 @@ angular.module('myApp').factory('AuthService',
                 var deferred = $q.defer();
                 $http({
                     method: 'POST',
-                    url: 'http://127.0.0.1:5000/AuthenticateUser/',
+                    url: 'http://178.62.31.229/AuthenticateUser/',
                     data: $httpParamSerializer({username: username, password: password}),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).then(function createSuccess(response, data, status) {
@@ -58,7 +58,7 @@ angular.module('myApp').factory('AuthService',
                 // create a new instance of deferred
                 var deferred = $q.defer();
                 // send a get request to the server
-                $http.get('http://127.0.0.1:5000/logout/')
+                $http.get('http://178.62.31.229/logout/')
                 // handle success
                     .success(function (data) {
                         user = false;
@@ -76,7 +76,7 @@ angular.module('myApp').factory('AuthService',
                 // create a new instance of deferred
                 var deferred = $q.defer();
                 // send a post request to the server
-                $http.post('http://127.0.0.1:5000/Register/', {username: username, email: email, password: password})
+                $http.post('http://178.62.31.229/Register/', {username: username, email: email, password: password})
                 // handle success
                     .success(function (data, status) {
                         if(status === 200 && data.result){

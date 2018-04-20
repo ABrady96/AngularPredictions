@@ -16,7 +16,7 @@ angular.module('myApp.signup', ['ngRoute'])
                 $scope.data = {username: $scope.username, email: $scope.email, password: $scope.password};
                 $http({
                     method: 'POST',
-                    url: 'http://127.0.0.1:5000/Register/',
+                    url: 'http://178.62.31.229/Register/',
                     data: $httpParamSerializer($scope.user),
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}
                 }).then(function createSuccess(response) {
